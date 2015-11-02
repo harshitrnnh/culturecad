@@ -5,6 +5,18 @@ import math
 import Meier_UI_Utility # This is the module with the UI creation code
 import System.Windows.Forms.DialogResult
 
+render_beads = False
+zulu_boy = False
+zulu_girl = False
+zulu_man = False
+zulu_woman = False
+zulu_red = False
+zulu_yellow = False
+zulu_blue = False
+zulu_green = False
+zulu_black = False
+zulu_pink = False
+zulu_white = False
 render_african = False
 render_canadian = False
 render_indian = False
@@ -15,8 +27,11 @@ african_percent = 0
 canadian_percent = 0
 dialog1 = True
 dialog2 = False
+id = 0
+pattern = ""
+color = ""
 
-def AfricanGh():
+def AfricanGh(pattern):
  
 #Load Grasshopper Plugin as gh
     gh = Rhino.RhinoApp.GetPlugInObject("Grasshopper")
@@ -26,7 +41,7 @@ def AfricanGh():
 
 
 #Values for GH Sliders
-    u = 35 
+    u = 35
     v = 20
  
 #Set Sliders Based on Values above
@@ -41,10 +56,210 @@ def AfricanGh():
 #srf = gh.GetType(234d0a6a-dff1-49d0-8f0e-ebcb4e3784ec)
 #print (srf)
 #Run it and Bake it
-    gh.OpenDocument ("C:\users\harshit\desktop\african bead clean")
+    gh.OpenDocument ("C:\users\harshit\desktop\culturecad\african bead clean")
     gh.RunSolver("african bead clean")
-    baked = gh.BakeDataInObject("e56447b5-2564-4068-96eb-91ae283a1cf6")
+    baked = gh.BakeDataInObject("21973337-cacb-434f-a2ee-68c725be217e")
+    #objectIds = rs.GetObjects(baked)
+    
+    i = 0
+    m = []
+    blist = []
+    for id in baked:
+        blist.append(id)
+    while i < v:
+        row = []
+        j = 0
+        while j < u:
+            row.append(blist[i+j*v])
+            j += 1
+        m.append(row)
+        i += 1
+    i = 0
+    print len(blist), len(m), len(m[0])
+    
+    
+    x = 0
+    while i <= v-5:
+        j = 0
+        while j <= u-7:
+            if x == 0:
+                if pattern == "zulu_boy": unmarried_boy_pattern (m, i, j, True)#married_boy_pattern(m, i, j,True)#
+                x = 1
+            else:
+                if pattern == "zulu_boy": unmarried_boy_pattern (m, i, j, False)#married_boy_pattern(m, i, j,False)
+                x = 0
+            j += 7
+        i += 5
+        
+def unmarried_girl_pattern(m, row, col):
+    
+    i = 0
+    while i < 4:
+        n = 0
+        if i == 0: n = 3
+        if i == 1: n = 2
+        if i == 2: n = 1
+        if i == 3: n = 0
+        j = 0
+        while j < 7:
+            if j < n or j >= 7-n:
+                if i % 2 == 0:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,255,0))
+                else:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,255))
+            else:
+                if col+j <= 35:
+                    sphere = m[row+i][col+j]
+                else:
+                    sphere = m[row+i][0]
+                m_index = rs.AddMaterialToObject(sphere)
+                rs.ObjectColorSource(sphere, 2)
+                rs.MaterialColor(m_index, (255,0,0))
+            j += 1
+        i += 1
+
+def unmarried_boy_pattern(m, row, col, color):
+
+    i = 0
+    while i < 4:
+        n = 0
+        if i == 0: n = 0
+        if i == 1: n = 1
+        if i == 2: n = 2
+        if i == 3: n = 3
+        j = 0
+        while j < 7:
+            if j < n or j >= 7-n:
+                if i % 2 == 0:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,255,0))
+                else:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,255))
+            else:
+                if col+j != 36:
+                    sphere = m[row+i][col+j]
+                else:
+                    sphere = m[row+i][0]
+                    
+                if color:
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (255,0,0))
+                else:
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,0))
+                #m_index = rs.AddMaterialToObject(sphere)
+                #rs.ObjectColorSource(sphere, 2)
+                #rs.MaterialColor(m_index, (255,0,0))
+            j += 1
+        i += 1
     #add color algo here
+    
+    
+def married_girl_pattern(m, row, col):
+    
+    i = 0
+    while i < 5:
+        n = 0
+        if i == 0 or i == 4: n = 2
+        if i == 1 or i == 3: n = 1
+        if i == 2: n = 0
+        j = 0
+        while j < 5:
+            if j < n or j >= 5-n:
+                if i % 2 == 0:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,255))
+                else:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,255))
+            else:
+                if col+j != 36:
+                    sphere = m[row+i][col+j]
+                else:
+                    sphere = m[row+i][0]
+                m_index = rs.AddMaterialToObject(sphere)
+                rs.ObjectColorSource(sphere, 2)
+                rs.MaterialColor(m_index, (255,0,0))
+            j += 1
+        i += 1
+
+def married_boy_pattern(m, row, col, color):
+    
+    i = 0
+    while i < 5:
+        n = 0
+        if i == 0 or i == 4: n = 0
+        if i == 1 or i == 3: n = 1
+        if i == 2: n = 2
+        j = 0
+        while j < 5:
+            if j < n or j >= 5-n:
+                if i % 2 == 0:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,255))
+                else:
+                    if col+j != 36:
+                        sphere = m[row+i][col+j]
+                    else:
+                        sphere = m[row+i][0]
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,255))
+            else:
+                if col+j != 36:
+                    sphere = m[row+i][col+j]
+                else:
+                    sphere = m[row+i][0]
+                if color:
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (255,0,0))
+                else:
+                    m_index = rs.AddMaterialToObject(sphere)
+                    rs.ObjectColorSource(sphere, 2)
+                    rs.MaterialColor(m_index, (0,0,0))
+            j += 1
+        i += 1
 
 def MashGh():
  
@@ -93,18 +308,81 @@ class CultureControl():
         p.addLabel("", "Culture-CAD Tool", (0, 164, 0), True)
         p.addSeparator("sep1", 230, True)
         p.addLabel("", "", (0, 0, 255), True)
-        p.addLabel("", "Cultures to Represent :", (0, 0, 255), True)
+        p.addLabel("", "Bead Tool", (0, 0, 255), True)
+        p.addLabel("", "Pattern to Represent :", (0, 0, 255), True)
         p.addLabel("", "", (0, 0, 255), True)
-        p.addCheckBox("african", "African", False, True, self.african_CheckStateChanged)
-        p.addCheckBox("indian", "Indian", False, True, self.indian_CheckStateChanged)
-        p.addCheckBox("canadian", "Native-Canadian", False, True, self.canadian_CheckStateChanged)
+        p.addCheckBox("pattern", "Pattern", False, False, self.zuluboy_CheckStateChanged)
+        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_boy1.png", False)
+        p.addCheckBox("pattern", "Pattern", False, False, self.zulugirl_CheckStateChanged)
+        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_girl1.png", False)
+        p.addCheckBox("pattern", "Pattern", False, False, self.zuluman_CheckStateChanged)
+        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_married_man1.png", False)
+        p.addCheckBox("pattern", "Pattern", False, False, self.zuluwoman_CheckStateChanged)
+        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_married_woman1.png", True)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addSeparator("sep1", 230, True)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addLabel("", "Choose One Pattern Color", (0, 0, 255), True)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("red", "Red - Love", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("yellow", "Yellow - Wealth", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("blue", "Blue - Failthfulness", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("green", "Green - Contentment", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("black", "Black - Marriage", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("pink", "Pink - Promise", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        p.addCheckBox("white", "White - Spiritual Love", False, True, self.african_CheckStateChanged)
+        p.addLabel("", "", (0, 0, 255), True)
+        #p.addCheckBox("indian", "Indian", False, True, self.indian_CheckStateChanged)
+        #p.addCheckBox("canadian", "Native-Canadian", False, True, self.canadian_CheckStateChanged)
         p.addSeparator("sep2", 230, True)
         #p.addCheckBox("africanpattern1", " ", False, True, self.africanpattern1_CheckStateChanged)
-        p.addButton("next", "Next", 100, True, self.next_OnButtonPress)
+        p.addButton("next", "Make!", 100, True, self.make_OnButtonPress)
         p.addLabel("", "", (0, 0, 255), True)
         #p.addComboBox("combo1", ["Choice 0", "Choice 1", "Choice 2"], 0, False, self.combo1_SelectedIndexChanged)
         #p.addButton("OK", "OK", buttonWidth, False, None)
         #p.addButton("Cancel", "Cancel", buttonWidth, False, None)
+        
+    def zuluboy_CheckStateChanged(self, sender, e):
+        try:
+            global zulu_boy
+            zulu_boy = not zulu_boy
+            if zulu_boy : pattern = "zulu_boy"
+        except:
+            pass
+    def zulugirl_CheckStateChanged(self, sender, e):
+        try:
+            global zulu_girl
+            zulu_girl = not zulu_girl
+            if zulu_girl: pattern = "zulu_girl"
+        except:
+            pass
+    def zuluman_CheckStateChanged(self, sender, e):
+        try:
+            global zulu_man
+            zulu_man = not zulu_man
+            if zulu_man: pattern = "zulu_man"
+        except:
+            pass
+    def zuluwoman_CheckStateChanged(self, sender, e):
+        try:
+            global zulu_woman
+            zulu_woman = not zulu_woman
+            if zulu_woman: pattern = "zulu_woman"
+        except:
+            pass
+    
+    def pattern_CheckStateChanged(self, sender, e):
+        try:
+            global zulu_girl
+            zulu_girl = not zulu_girl
+        except:
+            pass
         
     def african_CheckStateChanged(self, sender, e):
         try:
@@ -127,12 +405,16 @@ class CultureControl():
         except:
             pass
      
-    def next_OnButtonPress(self, sender, e):
-        ui2 = CultureControl2()
-        dialog2 = True
-        if dialog2:
-            Rhino.UI.Dialogs.ShowSemiModal(ui2.form)
-            dialog1 = False
+    def make_OnButtonPress(self, sender, e):
+        print ("reached")
+        #if render_african and render_texture:
+            #print ("bead")
+        AfricanGh(pattern)
+        #ui2 = CultureControl2()
+        #dialog2 = True
+        #if dialog2:
+            #Rhino.UI.Dialogs.ShowSemiModal(ui2.form)
+            #dialog1 = False
 
 class CultureControl2():
     def __init__(self):
@@ -240,9 +522,9 @@ class CultureControl2():
                 d.Value = (100 - canadian_percent)
         except:
             pass
-    def render_OnButtonPress(self, sender, e):
+    def make_OnButtonPress(self, sender, e):
         print ("reached")
-        if render_african and render_texture:
+        if render_beads and render_:
             print ("bead")
             AfricanGh()
         if render_canadian and render_african and render_pattern:
