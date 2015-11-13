@@ -5,6 +5,11 @@ import math
 import Meier_UI_Utility # This is the module with the UI creation code
 import System.Windows.Forms.DialogResult
 
+import clr
+clr.AddReference("mtrand")
+import numpy
+
+
 render_beads = False
 zulu_boy = False
 zulu_girl = False
@@ -31,7 +36,7 @@ id = 0
 pattern = ""
 color = ""
 
-def AfricanGh(pattern):
+def AfricanGh():
  
 #Load Grasshopper Plugin as gh
     gh = Rhino.RhinoApp.GetPlugInObject("Grasshopper")
@@ -56,7 +61,7 @@ def AfricanGh(pattern):
 #srf = gh.GetType(234d0a6a-dff1-49d0-8f0e-ebcb4e3784ec)
 #print (srf)
 #Run it and Bake it
-    gh.OpenDocument ("C:\users\harshit\desktop\culturecad\african bead clean")
+    gh.OpenDocument ("african bead clean")
     gh.RunSolver("african bead clean")
     baked = gh.BakeDataInObject("21973337-cacb-434f-a2ee-68c725be217e")
     #objectIds = rs.GetObjects(baked)
@@ -74,22 +79,40 @@ def AfricanGh(pattern):
             j += 1
         m.append(row)
         i += 1
-    i = 0
-    print len(blist), len(m), len(m[0])
+        
+    pattern_matrix = [[(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)],[(0,0,0),(0,255,255),(0,255,255),(0,255,255),(0,0,0)],[(0,0,0),(0,0,0),(255,0,255),(0,0,0),(0,0,0)],[(0,0,0),(0,255,0),(0,255,0),(0,255,0),(0,0,0)],[(255,0,0),(255,0,0),(255,0,0),(255,0,0),(255,0,0)]]
+#    i = 0
+#    print len(blist), len(m), len(m[0])
+#    
+#    
+#    x = 0
+#    while i <= v-5:
+#        j = 0
+#        while j <= u-7:
+#            if x == 0:
+#                if pattern == "zulu_boy": unmarried_boy_pattern (m, i, j, True)#married_boy_pattern(m, i, j,True)#
+#                x = 1
+#            else:
+#                if pattern == "zulu_boy": unmarried_boy_pattern (m, i, j, False)#married_boy_pattern(m, i, j,False)
+#                x = 0
+#            j += 7
+#        i += 5
+    rows = len(m)/len(pattern_matrix)
+    cols = len(m[0])/len(pattern_matrix[0])
+    m1 = numpy.asarray(m)
+    m1 = numpy.hsplit(m1, cols)
+    #m1 = numpy.vsplit(numpy.asarray(m),len(pattern_matrix[0])
+    m2 = []
+    #print m1
+    for h in m1:
+        x =  numpy.vsplit(h, rows)
+        for a in x:
+            m2.append(a.tolist())
+    #print len(m2), len(m2[0]), len(m2[0][0])
+    #print m2
+    for x in m2:
+        generic_pattern(x,pattern_matrix)
     
-    
-    x = 0
-    while i <= v-5:
-        j = 0
-        while j <= u-7:
-            if x == 0:
-                if pattern == "zulu_boy": unmarried_boy_pattern (m, i, j, True)#married_boy_pattern(m, i, j,True)#
-                x = 1
-            else:
-                if pattern == "zulu_boy": unmarried_boy_pattern (m, i, j, False)#married_boy_pattern(m, i, j,False)
-                x = 0
-            j += 7
-        i += 5
         
 def unmarried_girl_pattern(m, row, col):
     
@@ -261,6 +284,21 @@ def married_boy_pattern(m, row, col, color):
             j += 1
         i += 1
 
+def generic_pattern(object_submatrix, pattern_matrix):
+    i = 0
+    h = len(object_submatrix)
+    w = len(object_submatrix[0])
+    
+    while i < h:
+        j = 0
+        while j < w:
+            #if pattern_matrix[i][j] == 1:
+            sphere = object_submatrix[i][j]
+            m_index = rs.AddMaterialToObject(sphere)
+            rs.ObjectColorSource(sphere, 2)
+            rs.MaterialColor(m_index, pattern_matrix[i][j])
+            j += 1
+        i += 1
 def MashGh():
  
 #Load Grasshopper Plugin as gh
@@ -280,7 +318,7 @@ def MashGh():
 #srf = gh.GetType(234d0a6a-dff1-49d0-8f0e-ebcb4e3784ec)
 #print (srf)
 #Run it and Bake it
-    gh.OpenDocument ("C:\users\harshit\desktop\mashup_vase_1_for_ui")
+    gh.OpenDocument ("mashup_vase_1_for_ui")
     gh.RunSolver("mashup_vase_1_for_ui")
     baked = gh.BakeDataInObject("44bc862e-41e9-42ec-8ac3-a935632112f8")
     baked = gh.BakeDataInObject("9361a92b-bebe-49c0-8ea7-4a03e6ec3707")
@@ -312,13 +350,13 @@ class CultureControl():
         p.addLabel("", "Pattern to Represent :", (0, 0, 255), True)
         p.addLabel("", "", (0, 0, 255), True)
         p.addCheckBox("pattern", "Pattern", False, False, self.zuluboy_CheckStateChanged)
-        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_boy1.png", False)
+        p.addPictureBox("picbox1", "sample_images\zulu_meaning_boy1.png", False)
         p.addCheckBox("pattern", "Pattern", False, False, self.zulugirl_CheckStateChanged)
-        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_girl1.png", False)
+        p.addPictureBox("picbox1", "sample_images\zulu_meaning_girl1.png", False)
         p.addCheckBox("pattern", "Pattern", False, False, self.zuluman_CheckStateChanged)
-        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_married_man1.png", False)
+        p.addPictureBox("picbox1", "sample_images\zulu_meaning_married_man1.png", False)
         p.addCheckBox("pattern", "Pattern", False, False, self.zuluwoman_CheckStateChanged)
-        p.addPictureBox("picbox1", "C:\users\harshit\desktop\culturecad\sample_images\zulu_meaning_married_woman1.png", True)
+        p.addPictureBox("picbox1", "sample_images\zulu_meaning_married_woman1.png", True)
         p.addLabel("", "", (0, 0, 255), True)
         p.addSeparator("sep1", 230, True)
         p.addLabel("", "", (0, 0, 255), True)
@@ -409,7 +447,7 @@ class CultureControl():
         print ("reached")
         #if render_african and render_texture:
             #print ("bead")
-        AfricanGh(pattern)
+        AfricanGh()
         #ui2 = CultureControl2()
         #dialog2 = True
         #if dialog2:
